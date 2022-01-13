@@ -1,22 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   printf.c                                           :+:      :+:    :+:   */
+/*   printftrain.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emcariot <emcariot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/06 18:45:17 by emcariot          #+#    #+#             */
-/*   Updated: 2022/01/13 12:55:07 by emcariot         ###   ########.fr       */
+/*   Created: 2022/01/13 11:16:35 by emcariot          #+#    #+#             */
+/*   Updated: 2022/01/13 13:21:13 by emcariot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
+#include <string.h>
 
 
-//STRING
+//string
+
+int	ft_print_char(char c)
+{
+	write(1, &c, 1);
+	return (1);
+}
+
+int	ft_strlen(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
 
 void	ft_putstr(char *str)
 {
@@ -30,16 +46,6 @@ void	ft_putstr(char *str)
 	}
 }
 
-int	ft_strlen(char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
 int	ft_print_string(char *str)
 {
 	if (!str)
@@ -49,21 +55,10 @@ int	ft_print_string(char *str)
 	}
 	else
 		ft_putstr(str);
-	return (ft_strlen(str));
+	return (ft_strlen(str));;
 }
 
-int	ft_printchar(char c)
-{
-	write(1, &c, 1);
-	return (1);
-}
-
-//NUMBER
-
-void	ft_putchar_fd(char c, int fd)
-{
-	write(fd, &c, 1);
-}
+//nbr
 
 void	ft_putchar(char c)
 {
@@ -72,27 +67,27 @@ void	ft_putchar(char c)
 
 void	ft_putnbr(int nb)
 {
-	long long i;
+	long i;
 
 	i = nb;
-	if (nb < 0)
+	if (i < 0)
 	{
-		ft_putchar('-');
 		i = i * -1;
+		ft_putchar('-');
 	}
-	if (i > 9)
+	while (i > 9)
 		ft_putnbr(i / 10);
 	ft_putchar(i % 10 + '0');
 }
 
-static int	ft_int_len(long nb)
+int	ft_int_len(long nb)
 {
 	int len;
 
 	len = 0;
-	if (nb == 0)
+	if  (nb == 0)
 		len = 1;
-	if (nb < 0)
+	else if (nb < 0)
 	{
 		nb = nb * -1;
 		len++;
@@ -108,44 +103,48 @@ static int	ft_int_len(long nb)
 char *ft_itoa(int nb)
 {
 	char *str;
-	long n;
 	int len;
+	long i;
 
-	n = nb;
-	len = ft_int_len(n);
-	str = malloc(sizeof(char) * len + 1);
+	i = nb;
+	len = ft_int_len(i);
+	str = malloc(sizeof(char) * (len + 1));
+	str[len--] = '\0';
 	if (!str)
 		return (NULL);
-	str[len--] = '\0';
-	if (n == 0)
+	if (i == 0)
 		str[0] = 48;
-	else if (n < 0)
+	if (i < 0)
 	{
 		str[0] = '-';
-		n = n * -1;
+		i = i * -1;
 	}
-	while (n > 0)
+	while (i > 0)
 	{
-		str[len] = (n % 10) + 48;
-		n = n / 10;
-		len--;
+		str[len] = i % 10 + 48;
+		i = i / 10;
+		len++;
 	}
-	return(str);
+	return (str);
 }
 
-int	ft_print_nbr(int n)
+int	ft_print_int(int nb)
 {
-	int len;
 	char *num;
+	int len;
 
-	len = 0;
-	num = ft_itoa(n);
+	num = ft_itoa(nb);
 	len = ft_print_string(num);
 	free(num);
 	return (len);
 }
 
-//HEXA
+//hex
+
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
 
 int	ft_hex_len(unsigned int num)
 {
@@ -160,39 +159,39 @@ int	ft_hex_len(unsigned int num)
 	return (len);
 }
 
-void	ft_put_hex(unsigned int num, const char str)
+void	ft_put_hex(unsigned int nb, const char c)
 {
-	if (num >= 16)
+	if (nb >= 16)
 	{
-		ft_put_hex(num / 16, str);
-		ft_put_hex(num % 16, str);
+		ft_put_hex(nb / 16, c);
+		ft_put_hex(nb % 16, c);
 	}
 	else
 	{
-		if (num <= 9)
-			ft_putchar_fd((num + '0'), 1);
+		if (nb <= 9)
+			ft_putchar_fd((nb + 48), 1);
 		else
 		{
-			if (str == 'x')
-				ft_putchar_fd((num - 10 + 'a'), 1);
-		}
+			if (c == 'x')
+				ft_putchar_fd((nb - 10 + 'a'), 1);
+		}	
 	}
 }
 
-int	ft_print_hexa(unsigned int num, const char str)
+int	ft_print_hex(unsigned int num, const char c)
 {
 	if (num == 0)
-		return (write(1, "0", 1));
+		return(write(1, "0", 1));
 	else
-		ft_put_hex(num, str);
+		ft_put_hex(num, c);
 	return (ft_hex_len(num));
 }
 
-//MAIN
+//main
 
-char	*ft_strchr(const char *s, int c)
+char *ft_strchr(const char *s, int c)
 {
-	char	*str;
+	char *str;
 
 	str = (char *)s;
 	while (*str != c)
@@ -204,7 +203,7 @@ char	*ft_strchr(const char *s, int c)
 	return (str);
 }
 
-int	ft_ana_args(va_list tprint, const char arg)
+int	ft_ana_arg(va_list tprint, const char arg)
 {
 	int print_return;
 
@@ -212,47 +211,35 @@ int	ft_ana_args(va_list tprint, const char arg)
 	if (arg == 's')
 		print_return += ft_print_string(va_arg(tprint, char *));
 	else if (arg == 'i')
-		print_return += ft_print_nbr(va_arg(tprint, int));
+		print_return += ft_print_int(va_arg(tprint, int));
 	else if (arg == 'x')
-		print_return += ft_print_hexa(va_arg(tprint, unsigned int), arg);
+		print_return += ft_print_hex(va_arg(tprint, unsigned int), arg);
 	return (print_return);
 }
 
-int	ft_printf(const char *str, ...)
+int	ft_prinf(const char *str, ...)
 {
-	va_list tprint;
-	int i;
 	int print_return;
+	int i;
+	va_list tprint;
 
-	va_start(tprint, str);
-	i = 0;
 	print_return = 0;
+	i = 0;
+	va_start(tprint, str);
 	while (str[i])
 	{
 		if (str[i] == '%')
 		{
 			if (ft_strchr("xis", str[i + 1]))
-				print_return += ft_ana_args(tprint, str[i + 1]);
+				print_return += ft_ana_arg(tprint, str[i + 1]);
 			i += 2;
 		}
-		else 
+		else
 		{
-			print_return += ft_printchar(str[i]);
-			i++;
+			print_return += ft_print_char(str[i]);
 		}
+		i++;
 	}
 	va_end(tprint);
 	return (print_return);
-}
-
-#include <stdio.h>
-int main ()
-{
-	printf("%s\n", "hello");
-	ft_printf("%s\n", "hello");
-	printf("%i\n", 42);
-	ft_printf("%i\n", 42);
-	printf("%x\n", 42);
-	ft_printf("%x\n", 42);
-	return (0);
 }
